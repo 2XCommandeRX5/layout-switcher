@@ -1,0 +1,9 @@
+# Артефакты сборки (пересобираются build_app.sh)
+LayoutSwitcher
+LayoutSwitcher.app/
+AppIcon.icns
+AppIcon.iconset/
+make_icon
+
+# macOS
+.DS_Store
