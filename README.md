@@ -21,7 +21,7 @@ cd keyboard-layout-switcher
 ```
 
 Собирается `.app`-бандл `LayoutSwitcher.app` с bundle id
-`com.stefania.layoutswitcher` и ad-hoc подписью.
+`com.xcommanderx.layoutswitcher` и ad-hoc подписью.
 
 > **Запуск из терминала безопасен:** `./LayoutSwitcher` сам открывает себя
 > как `LayoutSwitcher.app` и возвращает терминал (процесс не привязан к нему).
@@ -58,7 +58,7 @@ open LayoutSwitcher.app
 выключить автозапуск и посмотреть текущую раскладку активного окна.
 
 Данные: `~/.layout-switcher/state.json` (можно удалить — «забудет» всё),
-лог: `log show --predicate 'subsystem == "com.stefania.layoutswitcher"'`.
+лог: `log show --predicate 'subsystem == "com.xcommanderx.layoutswitcher"'`.
 
 ## Ограничения / известное поведение
 

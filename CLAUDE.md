@@ -6,8 +6,8 @@
 раскладка при отсутствии ввода сохраняется как выбор пользователя.
 
 - Код: `LayoutSwitcher.swift` (один файл), сборка — `build_app.sh` (swiftc + `.app`).
-- Бандл: `LayoutSwitcher.app`, bundle id `com.stefania.layoutswitcher`, ad-hoc подпись.
-- Данные: `~/.layout-switcher/state.json`; лог: `log show --predicate 'subsystem == "com.stefania.layoutswitcher"'`.
+- Бандл: `LayoutSwitcher.app`, bundle id `com.xcommanderx.layoutswitcher`, ad-hoc подпись.
+- Данные: `~/.layout-switcher/state.json`; лог: `log show --predicate 'subsystem == "com.xcommanderx.layoutswitcher"'`.
 - Подробное пользовательское описание — `README.md`. Здесь — технические грабли агента.
 
 ## Сборка и запуск (важно)

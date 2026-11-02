@@ -35,7 +35,7 @@ cat > "$APP/Contents/Info.plist" <<PLIST
 <plist version="1.0">
 <dict>
     <key>CFBundleIdentifier</key>
-    <string>com.stefania.layoutswitcher</string>
+    <string>com.xcommanderx.layoutswitcher</string>
     <key>CFBundleName</key>
     <string>LayoutSwitcher</string>
     <key>CFBundleDisplayName</key>
@@ -61,6 +61,6 @@ cat > "$APP/Contents/Info.plist" <<PLIST
 PLIST
 
 # ad-hoc подпись: свой идентификатор приложения
-codesign --force --sign - --identifier com.stefania.layoutswitcher "$APP" 2>/dev/null
+codesign --force --sign - --identifier com.xcommanderx.layoutswitcher "$APP" 2>/dev/null
 
 echo "OK: $APP"

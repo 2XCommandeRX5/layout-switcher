@@ -29,7 +29,7 @@ import os.log
 // Запуск:  ./LayoutSwitcher [--quit | --install | --uninstall]
 // ============================================================
 
-let log = OSLog(subsystem: "com.stefania.layoutswitcher", category: "main")
+let log = OSLog(subsystem: "com.xcommanderx.layoutswitcher", category: "main")
 
 // MARK: - Accessibility: активное окно
 
@@ -190,7 +190,7 @@ enum BrowserTabKey: Hashable, CustomStringConvertible {
                 safariURLCacheTime = now
             }
             // Страница могла не догрузиться / URL недоступен — ключ по
-            // заголовку вкладки (e.g. "Stefania 💃", "Example Domain").
+            // заголовку вкладки (e.g. "xcommanderx 💃", "Example Domain").
             if let t = normalizeTitleKey(windowTitle) { return .title(t) }
             return nil
 
@@ -795,7 +795,7 @@ private final class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusItem: NSStatusItem?
     private var layoutTimer: Timer?
     private let launchAgentPath = FileManager.default.homeDirectoryForCurrentUser
-        .appendingPathComponent("Library/LaunchAgents/com.stefania.layoutswitcher.plist")
+        .appendingPathComponent("Library/LaunchAgents/com.xcommanderx.layoutswitcher.plist")
 
     init(store: LayoutStore) {
         self.store = store
@@ -903,7 +903,7 @@ private final class AppDelegate: NSObject, NSApplicationDelegate {
             <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
             <plist version="1.0">
             <dict>
-                <key>Label</key><string>com.stefania.layoutswitcher</string>
+                <key>Label</key><string>com.xcommanderx.layoutswitcher</string>
                 <key>ProgramArguments</key>
                 <array><string>\(binary)</string></array>
                 <key>RunAtLoad</key><true/>
@@ -1028,7 +1028,7 @@ if args.contains("--install") || args.contains("--uninstall") {
     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
     <plist version="1.0">
     <dict>
-        <key>Label</key><string>com.stefania.layoutswitcher</string>
+        <key>Label</key><string>com.xcommanderx.layoutswitcher</string>
         <key>ProgramArguments</key>
         <array><string>\(binary)</string></array>
         <key>RunAtLoad</key><true/>
@@ -1037,7 +1037,7 @@ if args.contains("--install") || args.contains("--uninstall") {
     </plist>
     """
     let target = FileManager.default.homeDirectoryForCurrentUser
-        .appendingPathComponent("Library/LaunchAgents/com.stefania.layoutswitcher.plist")
+        .appendingPathComponent("Library/LaunchAgents/com.xcommanderx.layoutswitcher.plist")
     try? FileManager.default.createDirectory(at: target.deletingLastPathComponent(),
                                              withIntermediateDirectories: true)
     do {
