@@ -895,7 +895,11 @@ private final class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc private func toggleLaunchAtLogin() {
         if launchAgentExists() {
-            try? FileManager.default.removeItem(at: launchAgentPath)
+            // Выключение автозапуска = снять агента и остановить процесс
+            // (без KeepAlive он сам не воскреснет; см. quit()).
+            let plist = launchAgentPath
+            try? FileManager.default.removeItem(at: plist)
+            stopViaLaunchd()
         } else {
             let binary = CommandLine.arguments[0]
             let plist = """
@@ -907,7 +911,6 @@ private final class AppDelegate: NSObject, NSApplicationDelegate {
                 <key>ProgramArguments</key>
                 <array><string>\(binary)</string></array>
                 <key>RunAtLoad</key><true/>
-                <key>KeepAlive</key><true/>
             </dict>
             </plist>
             """
@@ -940,7 +943,26 @@ private final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc private func quit() {
-        NSApp.terminate(nil)
+        // Снять автозапуск и погасить процесс через launchd: иначе "Выход"
+        // из меню ничего не решает — агент с RunAtLoad поднимет процесс заново.
+        try? FileManager.default.removeItem(at: launchAgentPath)
+        stopViaLaunchd()
+    }
+
+    /// Остановить службу launchd (если агент установлен и загружен) и,
+    /// как запасной вариант, убить процесс. Наш собственный процесс при
+    /// этом завершится (NSApp.terminate во второй ветке) — это ожидаемо.
+    private func stopViaLaunchd() {
+        let label = "com.xcommanderx.layoutswitcher"
+        for args in [["bootout", "gui/\(getuid())/\(label)"],
+                     ["kill", "\(label)"]] {
+            let p = Process()
+            p.executableURL = URL(fileURLWithPath: "/bin/launchctl")
+            p.arguments = args
+            try? p.run()
+            p.waitUntilExit()
+        }
+        NSApp.terminate(nil) // сам shutdown: pkill по имени мог задеть и нас
     }
 }
 
@@ -1005,11 +1027,20 @@ private func relaunchThroughApp() -> Bool {
 }
 
 if args.contains("--quit") {
-    let p = Process()
-    p.executableURL = URL(fileURLWithPath: "/usr/bin/pkill")
-    p.arguments = ["-x", "LayoutSwitcher"]
-    try? p.run()
-    p.waitUntilExit()
+    // Остановка через launchd во всех случаях: если агент установлен и
+    // загружен — bootout/kill гасит процесс; если агента нет — процесс
+    // умирает только от TERM по имени (см. ниже).
+    let label = "com.xcommanderx.layoutswitcher"
+    let stop = Process()
+    stop.executableURL = URL(fileURLWithPath: "/bin/launchctl")
+    stop.arguments = ["bootout", "gui/\(getuid())/\(label)"]
+    try? stop.run()
+    stop.waitUntilExit()
+    let kill = Process()
+    kill.executableURL = URL(fileURLWithPath: "/usr/bin/pkill")
+    kill.arguments = ["-x", "LayoutSwitcher"]
+    try? kill.run()
+    kill.waitUntilExit()
     exit(0)
 }
 
@@ -1032,7 +1063,6 @@ if args.contains("--install") || args.contains("--uninstall") {
         <key>ProgramArguments</key>
         <array><string>\(binary)</string></array>
         <key>RunAtLoad</key><true/>
-        <key>KeepAlive</key><true/>
     </dict>
     </plist>
     """
@@ -1042,7 +1072,16 @@ if args.contains("--install") || args.contains("--uninstall") {
                                              withIntermediateDirectories: true)
     do {
         try content.write(to: target, atomically: true, encoding: .utf8)
-        print(args.contains("--install") ? "LaunchAgent установлен: \(target.path)" : "LaunchAgent записан; удалить: rm \(target.path)")
+        if args.contains("--uninstall") {
+            // --uninstall: агента сняли. Остановить LaunchAgent через launchd,
+            // иначе служба останется загруженной вплоть до перезагрузки.
+            let p = Process()
+            p.executableURL = URL(fileURLWithPath: "/bin/launchctl")
+            p.arguments = ["bootout", "gui/\(getuid())/\(target.deletingPathExtension().lastPathComponent)"]
+            try? p.run()
+            p.waitUntilExit()
+        }
+        print(args.contains("--install") ? "LaunchAgent установлен: \(target.path)" : "LaunchAgent удалён: \(target.path)")
     } catch {
         print("Ошибка записи LaunchAgent: \(error)")
         exit(1)
